@@ -3,27 +3,14 @@ providers = ["php"]
 [variables]
     NIXPACKS_PHP_ROOT_DIR = "/app/public"
 
-[phases.setup]
-    nixPkgs = ["php83", "php83Packages.composer", "nodejs_22", "nginx"]
-
 [phases.install]
-    cmds = [
-        "composer install --ignore-platform-reqs --no-interaction",
-        "npm ci"
-    ]
+    # Standard installation of dependencies
+    cmds = ["composer install --ignore-platform-reqs --no-interaction", "npm ci"]
 
 [phases.build]
+    # Build your Vite assets
     cmds = ["npm run build"]
 
-# This is the secret sauce: 
-# Nixpacks allows 'preStart' which runs right before the server launches.
-[phases.preStart]
-    cmds = [
-        "php artisan migrate --force",
-        "php artisan config:cache",
-        "php artisan route:cache"
-    ]
-
-# !!! STOPS HERE !!!
-# DO NOT ADD A [start] SECTION. 
-# Removing it lets Nixpacks use its own perfectly-configured Nginx/PHP-FPM start command.
+# WE ARE SKIPPING MIGRATIONS ENTIRELY
+# WE ARE REMOVING THE [start] SECTION ENTIRELY
+# This forces Nixpacks to use its own working default start command.
