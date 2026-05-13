@@ -1,28 +1,16 @@
 FROM richarvey/nginx-php-fpm:latest
 
-# 1. Set the working directory inside the container
+# 1. Set the working directory
 WORKDIR /var/www/html
 
-# 2. Copy EVERYTHING from your repository into the container
+# 2. Copy all files from your repo root to the container root
 COPY . .
 
-# 3. SMART MOVE: If the folder 'pakde-se2' exists, move its contents to the root.
-# If it doesn't exist (because you're already in the root), do nothing.
-RUN if [ -d "pakde-se2" ]; then \
-        cp -R pakde-se2/* . && \
-        rm -rf pakde-se2; \
-    fi
-
-# 4. Set Environment Variables for this specific Nginx-PHP image
+# 3. Force the image to use the 'public' folder as the web root
+# This is what stops the 404
 ENV WEBROOT /var/www/html/public
 ENV APP_TYPE php
 ENV SKIP_COMPOSER 1
-ENV PHP_ERRORS_STDERR 1
 
-# 5. Fix permissions so Laravel can write logs and cache
-# This image uses the 'poly' user by default
-RUN chown -R poly:poly /var/www/html/storage /var/www/html/bootstrap/cache && \
-    chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
-
-# 6. Expose port 80
-EXPOSE 80
+# 4. Fix permissions for Laravel
+RUN chown -R poly:poly /var/www/html/storage /var/www/html/bootstrap/cache
