@@ -1,4 +1,4 @@
-# Use the same base image Nixpacks normally picks
+# Override Nixpacks defaults: PHP + Node + Composer + MySQL client
 FROM ghcr.io/railwayapp/nixpacks:ubuntu-1745885067
 
 WORKDIR /app
@@ -6,8 +6,8 @@ WORKDIR /app
 # Copy your app source
 COPY . /app
 
-# Install PHP, Node, Composer directly
-RUN nix-env -iA nixpkgs.php83 nixpkgs.nodejs_22 nixpkgs.composer
+# Install PHP, Node, Composer, and MySQL client
+RUN nix-env -iA nixpkgs.php83 nixpkgs.nodejs_22 nixpkgs.composer nixpkgs.libmysqlclient
 
 # Install dependencies and build assets
 RUN composer install --no-dev --optimize-autoloader \
