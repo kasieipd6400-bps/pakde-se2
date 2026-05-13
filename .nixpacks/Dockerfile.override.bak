@@ -7,4 +7,4 @@ RUN nix-env -iA nixpkgs.php83 nixpkgs.nodejs_22 nixpkgs.composer
 
 RUN composer install --no-dev --optimize-autoloader && npm ci && npm run build
 
-CMD ["php", "-S", "0.0.0.0:3000", "-t", "public"] 
+CMD ["php", "-S", "0.0.0.0:3000", "-t", "public"]
