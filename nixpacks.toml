@@ -1,20 +1,27 @@
+# nixpacks.toml
 providers = ["php"]
 
 [phases.setup]
-nixPkgs = ["php83", "nodejs_22", "nginx"]
+# We MUST add 'composer' here specifically
+nixPkgs = ["php83", "composer", "nodejs_22", "nginx"]
 
 [phases.install]
-cmds = ["composer install --ignore-platform-reqs", "npm ci"]
+# Ensure we are in the right place and run installs
+cmds = [
+    "composer install --ignore-platform-reqs --no-interaction",
+    "npm ci"
+]
 
 [phases.build]
-# We only build here. If this fails, check the 'Logs' for Vite errors.
+# Build your Vite assets
 cmds = ["npm run build"]
 
 [start]
-# Use the default Nixpacks Nginx config but ensure migrations run
-cmd = "php artisan migrate --force && php-fpm -D && nginx -g 'daemon off;'"
+# 1. Kill the conflicting Nginx file
+# 2. Run migrations
+# 3. Start services
+cmd = "rm -f /etc/nginx/conf.d/default.conf && php artisan migrate --force && php-fpm -D && nginx -g 'daemon off;'"
 
 [variables]
 NIXPACKS_PHP_ROOT_DIR = "/app/public"
 IS_STATIC_SITE = "false"
-NODE_ENV = "production"
