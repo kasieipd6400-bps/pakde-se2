@@ -1,16 +1,15 @@
 providers = ["php"]
 
 [variables]
+    # This is the only variable Nixpacks needs to correctly 
+    # configure Nginx for a Laravel project.
     NIXPACKS_PHP_ROOT_DIR = "/app/public"
 
 [phases.install]
-    # Standard installation of dependencies
     cmds = ["composer install --ignore-platform-reqs --no-interaction", "npm ci"]
 
 [phases.build]
-    # Build your Vite assets
     cmds = ["npm run build"]
 
-# WE ARE SKIPPING MIGRATIONS ENTIRELY
-# WE ARE REMOVING THE [start] SECTION ENTIRELY
-# This forces Nixpacks to use its own working default start command.
+# DO NOT add a [start] section.
+# DO NOT add a [phases.setup] section.
