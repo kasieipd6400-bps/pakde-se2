@@ -1,28 +1,23 @@
 # nixpacks.toml
 
-# Force ONLY the PHP provider to own the runtime
 providers = ["php"]
 
 [phases.setup]
-# PHP for the server, Node for Vite
 nixPkgs = ["php83", "nodejs_22", "nginx"]
 
 [phases.install]
 cmds = ["composer install --ignore-platform-reqs", "npm ci"]
 
 [phases.build]
-# Build the assets and then CLEAN UP any Node-related Nginx ghosts
-cmds = ["npm run build"]
+# Build Vite assets and ensure the Nginx config directory is clean
+cmds = ["npm run build", "rm -rf /etc/nginx/conf.d/default.conf"]
 
 [start]
-# THE FIX: 
-# 1. Force remove the default Nginx site that causes the "duplicate /" error.
-# 2. Run migrations.
-# 3. Start PHP and Nginx.
+# We remove any leftover default configs and start the services manually
 cmd = "rm -f /etc/nginx/conf.d/default.conf && php artisan migrate --force && php-fpm -D && nginx -g 'daemon off;'"
 
 [variables]
-# These force Nixpacks to stay in "PHP mode" despite the package.json
 NIXPACKS_PROVIDERS = "php"
-IS_STATIC_SITE = "false"
+# This is the most important variable to override the 'dist' behavior
 NIXPACKS_PHP_ROOT_DIR = "/app/public"
+IS_STATIC_SITE = "false"
