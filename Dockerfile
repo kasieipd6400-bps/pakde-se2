@@ -1,14 +1,16 @@
 FROM richarvey/nginx-php-fpm:latest
 
-COPY . /var/www/html
+# Set the working directory
+WORKDIR /var/www/html
 
-# Laravel configuration
+# Copy the contents of your subfolder into the container's web root
+# Note the dot at the end of the first path
+COPY pakde-se2/. .
+
+# Tell the image where the Laravel public folder is now
 ENV WEBROOT /var/www/html/public
 ENV APP_TYPE php
 ENV SKIP_COMPOSER 1
-ENV PHP_ERRORS_STDERR 1
 
-# Install dependencies if needed
-RUN composer install --ignore-platform-reqs --no-interaction
-
-EXPOSE 80
+# Fix permissions for the Laravel storage and cache
+RUN chown -R poly:poly /var/www/html/storage /var/www/html/bootstrap/cache
