@@ -7,12 +7,11 @@ nixPkgs = ["php83", "nodejs_22", "nginx"]
 cmds = ["composer install --ignore-platform-reqs", "npm ci"]
 
 [phases.build]
-# ONLY build the assets here. Do not touch system files.
+# Just build. Do not touch any system files here.
 cmds = ["npm run build"]
 
 [start]
-# This is where we handle the Nginx conflict. 
-# It runs as the container starts, which has the necessary permissions.
+# We only fix the Nginx conflict at the very moment the container starts.
 cmd = "rm -f /etc/nginx/conf.d/default.conf && php artisan migrate --force && php-fpm -D && nginx -g 'daemon off;'"
 
 [variables]
