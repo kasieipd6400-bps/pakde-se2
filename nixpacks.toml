@@ -1,15 +1,20 @@
+# nixpacks.toml
+
+# 1. Force Nixpacks to ONLY use the PHP provider to avoid Nginx conflicts
+providers = ["php"]
+
 [phases.setup]
-nixPkgs = ["php83", "nodejs", "vips"]
+# Include both PHP and Node (Node is needed for the build phase)
+nixPkgs = ["php83", "nodejs_22", "nginx"]
 
 [phases.install]
-cmds = ["composer install --frozen-lockfile", "npm install"]
+# Use --ignore-platform-reqs for composer to avoid extension mismatch errors
+cmds = ["composer install --ignore-platform-reqs", "npm ci"]
 
 [phases.build]
+# Build your Vite/frontend assets
 cmds = ["npm run build"]
 
 [start]
+# Combined start command for Laravel
 cmd = "php artisan migrate --force && php-fpm -D && nginx -g 'daemon off;'"
-
-# This forces Nixpacks to ignore the Node provider for the runtime server
-[providers]
-php = {}
