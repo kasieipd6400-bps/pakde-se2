@@ -3,16 +3,16 @@ providers = ["php"]
 [variables]
     NIXPACKS_PHP_ROOT_DIR = "/app/public"
 
+[phases.setup]
+    # We force remove the default config here. 
+    # This happens during the image build, so it's gone for good.
+    cmds = ["rm -f /etc/nginx/conf.d/default.conf"]
+
 [phases.install]
     cmds = ["composer install --ignore-platform-reqs --no-interaction", "npm ci"]
 
 [phases.build]
     cmds = ["npm run build"]
 
-[phases.setup]
-    # We use the setup phase to create a script that will 
-    # clean up the Nginx config every time the container starts.
-    cmds = ["echo 'rm -f /etc/nginx/conf.d/default.conf' > /etc/prestart.sh && chmod +x /etc/prestart.sh"]
-
-# WE ARE NOT OVERRIDING [start].
-# Instead, we are going to use the Coolify UI to trigger our cleanup.
+# DO NOT add a [start] section.
+# Let Nixpacks use its internal, working PHP paths.
