@@ -1,18 +1,16 @@
 providers = ["php"]
 
 [variables]
-    # This is the line I missed - it tells Nixpacks NOT to skip 
-    # the PHP-Nginx setup even if it thinks it's a static site.
-    NIXPACKS_NO_PHP_NGINX = "false"
-    
-    # Ensures the web root is correctly pointed to Laravel's public folder
     NIXPACKS_PHP_ROOT_DIR = "/app/public"
-    
-    # Helps force production behavior
-    NODE_ENV = "production"
+    NIXPACKS_NO_PHP_NGINX = "false"
 
 [phases.install]
     cmds = ["composer install --ignore-platform-reqs --no-interaction", "npm ci"]
 
 [phases.build]
     cmds = ["npm run build"]
+
+[start]
+    # 1. We use 'sed' to delete the extra 'location /' block that Coolify is forcing.
+    # 2. We then call the full path to the nixpacks-php-fpm helper to avoid Error 127.
+    cmd = "sed -i '/location \\/ {/,/}/d' /etc/nginx/nginx.conf && /usr/local/bin/nixpacks-php-fpm"
