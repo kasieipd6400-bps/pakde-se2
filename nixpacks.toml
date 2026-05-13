@@ -14,7 +14,8 @@ cmds = [
 cmds = ["npm run build"]
 
 [start]
-cmd = "rm -f /etc/nginx/conf.d/default.conf && php artisan migrate --force && php-fpm -D && nginx -g 'daemon off;'"
+# We use 'start-php-fpm' which is a Nixpacks helper that handles the config paths
+cmd = "rm -f /etc/nginx/conf.d/default.conf && php artisan config:clear && php artisan migrate --force && (php-fpm -y /etc/php-fpm.conf -D || php-fpm -D) && nginx -g 'daemon off;'"
 
 [variables]
 NIXPACKS_PHP_ROOT_DIR = "/app/public"
