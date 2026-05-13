@@ -7,10 +7,13 @@ providers = ["php"]
     cmds = ["composer install --ignore-platform-reqs --no-interaction", "npm ci"]
 
 [phases.build]
-    cmds = ["npm run build"]
+    # We delete the conflicting default config here during the build.
+    # This leaves the paths for nixpacks-php-fpm completely untouched.
+    cmds = [
+        "npm run build",
+        "rm -f /etc/nginx/conf.d/default.conf"
+    ]
 
-[start]
-    # 1. 'rm' is safer than 'mv' for getting rid of the duplicate config.
-    # 2. We use 'nixpacks-php-fpm' without a hardcoded path.
-    # 3. If that fails, we fallback to the standard 'php-fpm' + 'nginx' start.
-    cmd = "rm -f /etc/nginx/conf.d/default.conf && (nixpacks-php-fpm || (php-fpm -D && nginx -g 'daemon off;'))"
+# !!! IMPORTANT !!!
+# DELETE the [start] section entirely from your file.
+# This allows Nixpacks to use its internal paths for PHP and Nginx.
