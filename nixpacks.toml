@@ -2,6 +2,7 @@ providers = ["php"]
 
 [variables]
     NIXPACKS_PHP_ROOT_DIR = "/app/public"
+    # Prevents Node and PHP providers from fighting over Nginx
     IS_STATIC_SITE = "false"
 
 [phases.setup]
@@ -16,9 +17,7 @@ providers = ["php"]
 [phases.build]
     cmds = ["npm run build"]
 
-# REMOVE the postBuild section entirely. 
-# We don't want artisan running in the 'isolated' build environment.
-
 [start]
-    # This runs at RUNTIME when the DB is actually available.
-    cmd = "php artisan migrate --force && php artisan config:cache && php artisan route:cache && nixpacks-php-fpm"
+    # This runs migrations first, then calls the built-in startup script
+    # /assets/start.sh is the standard Nixpacks entrypoint for PHP
+    cmd = "php artisan migrate --force && bash /assets/start.sh"
