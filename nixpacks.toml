@@ -16,5 +16,4 @@ cmds = ["composer install --ignore-platform-reqs", "npm ci"]
 cmds = ["npm run build"]
 
 [start]
-# Combined start command for Laravel
-cmd = "php artisan migrate --force && php-fpm -D && nginx -g 'daemon off;'"
+cmd = "php artisan migrate --force && node /assets/scripts/prestart.mjs /assets/nginx.template.conf /etc/nginx.conf && php-fpm -D && nginx -g 'daemon off;'"
