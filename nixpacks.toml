@@ -1,0 +1,15 @@
+[phases.setup]
+nixPkgs = ["php83", "nodejs", "vips"]
+
+[phases.install]
+cmds = ["composer install --frozen-lockfile", "npm install"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+cmd = "php artisan migrate --force && php-fpm -D && nginx -g 'daemon off;'"
+
+# This forces Nixpacks to ignore the Node provider for the runtime server
+[providers]
+php = {}
