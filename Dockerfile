@@ -1,31 +1,25 @@
-# Stage 1: Install dependencies
+# Stage 1: Build dependencies
 FROM composer:latest as vendor
 WORKDIR /app
 COPY . .
-RUN composer install \
-    --ignore-platform-reqs \
-    --no-interaction \
-    --no-plugins \
-    --no-scripts \
-    --prefer-dist
+RUN composer install --ignore-platform-reqs --no-interaction --prefer-dist
 
-# Stage 2: Web Server
+# Stage 2: Runtime
 FROM richarvey/nginx-php-fpm:latest
 
+# The image expects code in /var/www/html
 WORKDIR /var/www/html
-
-# Copy app code and the vendor folder from the previous stage
 COPY . .
 COPY --from=vendor /app/vendor /var/www/html/vendor
 
-# Configuration
+# --- CRITICAL CONFIGURATION ---
+# These variables tell the base image's scripts how to configure Nginx
 ENV WEBROOT /var/www/html/public
 ENV APP_TYPE php
 ENV SKIP_COMPOSER 1
 ENV PHP_ERRORS_STDERR 1
-ENV RUN_SCRIPTS 1
 
-# Fix permissions for Laravel
+# Ensure the storage directories exist and are writable
 RUN mkdir -p storage/framework/sessions \
              storage/framework/views \
              storage/framework/cache \
