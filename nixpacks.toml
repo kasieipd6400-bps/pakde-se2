@@ -1,8 +1,15 @@
 providers = ["php"]
 
 [variables]
-    # This is the only instruction Nixpacks needs to set up Nginx correctly.
+    # This is the line I missed - it tells Nixpacks NOT to skip 
+    # the PHP-Nginx setup even if it thinks it's a static site.
+    NIXPACKS_NO_PHP_NGINX = "false"
+    
+    # Ensures the web root is correctly pointed to Laravel's public folder
     NIXPACKS_PHP_ROOT_DIR = "/app/public"
+    
+    # Helps force production behavior
+    NODE_ENV = "production"
 
 [phases.install]
     cmds = ["composer install --ignore-platform-reqs --no-interaction", "npm ci"]
