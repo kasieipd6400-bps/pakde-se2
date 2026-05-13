@@ -1,18 +1,13 @@
-providers = ["php"]
-
-[variables]
-    NIXPACKS_PHP_ROOT_DIR = "/app/public"
-
 [phases.setup]
-    # We force remove the default config here. 
-    # This happens during the image build, so it's gone for good.
-    cmds = ["rm -f /etc/nginx/conf.d/default.conf"]
+nixPkgs = ["php83", "php83Packages.composer", "nodejs_22", "nginx"]
 
 [phases.install]
-    cmds = ["composer install --ignore-platform-reqs --no-interaction", "npm ci"]
+cmds = ["composer install --ignore-platform-reqs --no-interaction", "npm ci"]
 
 [phases.build]
-    cmds = ["npm run build"]
+cmds = ["npm run build"]
 
-# DO NOT add a [start] section.
-# Let Nixpacks use its internal, working PHP paths.
+[start]
+# We start PHP and Nginx manually, just like a real server.
+# This bypasses the 'duplicate location' error because we use our OWN config.
+cmd = "php-fpm -D && nginx -c /app/nginx.conf -g 'daemon off;'"
