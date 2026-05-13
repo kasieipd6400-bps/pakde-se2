@@ -8,6 +8,7 @@ cmds = ["composer install --no-dev --optimize-autoloader", "npm ci"]
 cmds = ["npm run build"]
 
 [phases.start]
-cmd = "php-fpm -D && nginx -c /app/nginx.conf"
+# Force PHP built-in server, ignore Nginx
+cmd = "php -S 0.0.0.0:${PORT:-3000} -t public"
 
 
