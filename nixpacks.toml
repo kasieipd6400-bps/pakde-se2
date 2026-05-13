@@ -11,6 +11,6 @@ providers = ["php"]
     cmds = ["npm run build"]
 
 [start]
-    # 1. We use 'sed' to delete the extra 'location /' block that Coolify is forcing.
-    # 2. We then call the full path to the nixpacks-php-fpm helper to avoid Error 127.
-    cmd = "sed -i '/location \\/ {/,/}/d' /etc/nginx/nginx.conf && /usr/local/bin/nixpacks-php-fpm"
+    # We move the default config to a backup name so it doesn't conflict
+    # Then we run the Nixpacks PHP-FPM helper
+    cmd = "mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.bak 2>/dev/null || true && /usr/local/bin/nixpacks-php-fpm"
