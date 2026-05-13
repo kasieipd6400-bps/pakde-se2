@@ -1,10 +1,18 @@
+# Use the same base image Nixpacks normally picks
 FROM ghcr.io/railwayapp/nixpacks:ubuntu-1745885067
 
 WORKDIR /app
+
+# Copy your app source
 COPY . /app
 
+# Install PHP, Node, Composer directly
 RUN nix-env -iA nixpkgs.php83 nixpkgs.nodejs_22 nixpkgs.composer
 
-RUN composer install --no-dev --optimize-autoloader && npm ci && npm run build
+# Install dependencies and build assets
+RUN composer install --no-dev --optimize-autoloader \
+    && npm ci \
+    && npm run build
 
-CMD ["php", "-S", "0.0.0.0:3000", "-t", "public"] 
+# Start with PHP built-in server only
+CMD ["php", "-S", "0.0.0.0:3000", "-t", "public"]
