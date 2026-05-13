@@ -2,7 +2,6 @@ providers = ["php"]
 
 [variables]
     NIXPACKS_PHP_ROOT_DIR = "/app/public"
-    NIXPACKS_NO_PHP_NGINX = "false"
 
 [phases.install]
     cmds = ["composer install --ignore-platform-reqs --no-interaction", "npm ci"]
@@ -11,6 +10,7 @@ providers = ["php"]
     cmds = ["npm run build"]
 
 [start]
-    # We move the default config to a backup name so it doesn't conflict
-    # Then we run the Nixpacks PHP-FPM helper
-    cmd = "mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.bak 2>/dev/null || true && /usr/local/bin/nixpacks-php-fpm"
+    # 1. 'rm' is safer than 'mv' for getting rid of the duplicate config.
+    # 2. We use 'nixpacks-php-fpm' without a hardcoded path.
+    # 3. If that fails, we fallback to the standard 'php-fpm' + 'nginx' start.
+    cmd = "rm -f /etc/nginx/conf.d/default.conf && (nixpacks-php-fpm || (php-fpm -D && nginx -g 'daemon off;'))"
