@@ -1,19 +1,21 @@
 # nixpacks.toml
 
-# 1. Force Nixpacks to ONLY use the PHP provider to avoid Nginx conflicts
 providers = ["php"]
 
 [phases.setup]
-# Include both PHP and Node (Node is needed for the build phase)
 nixPkgs = ["php83", "nodejs_22", "nginx"]
 
 [phases.install]
-# Use --ignore-platform-reqs for composer to avoid extension mismatch errors
 cmds = ["composer install --ignore-platform-reqs", "npm ci"]
 
 [phases.build]
-# Build your Vite/frontend assets
 cmds = ["npm run build"]
 
 [start]
-cmd = "php artisan migrate --force && node /assets/scripts/prestart.mjs /assets/nginx.template.conf /etc/nginx.conf && php-fpm -D && nginx -g 'daemon off;'"
+# We add 'rm -f /etc/nginx/conf.d/default.conf' to remove the conflict
+cmd = "php artisan migrate --force && rm -f /etc/nginx/conf.d/default.conf && node /assets/scripts/prestart.mjs /assets/nginx.template.conf /etc/nginx.conf && php-fpm -D && nginx -c /etc/nginx.conf -g 'daemon off;'"
+
+[variables]
+NIXPACKS_PROVIDERS = "php"
+NIXPACKS_PHP_ROOT_DIR = "/app/public"
+IS_STATIC_SITE = "false"
