@@ -7,13 +7,12 @@ providers = ["php"]
     cmds = ["composer install --ignore-platform-reqs --no-interaction", "npm ci"]
 
 [phases.build]
-    # We delete the conflicting default config here during the build.
-    # This leaves the paths for nixpacks-php-fpm completely untouched.
-    cmds = [
-        "npm run build",
-        "rm -f /etc/nginx/conf.d/default.conf"
-    ]
+    cmds = ["npm run build"]
 
-# !!! IMPORTANT !!!
-# DELETE the [start] section entirely from your file.
-# This allows Nixpacks to use its internal paths for PHP and Nginx.
+[phases.setup]
+    # We use the setup phase to create a script that will 
+    # clean up the Nginx config every time the container starts.
+    cmds = ["echo 'rm -f /etc/nginx/conf.d/default.conf' > /etc/prestart.sh && chmod +x /etc/prestart.sh"]
+
+# WE ARE NOT OVERRIDING [start].
+# Instead, we are going to use the Coolify UI to trigger our cleanup.
