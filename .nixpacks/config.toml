@@ -8,6 +8,6 @@ cmds = ["composer install --no-dev --optimize-autoloader", "npm ci"]
 cmds = ["npm run build"]
 
 [phases.start]
-# Use PHP built-in server for simplicity
-cmd = "php -S 0.0.0.0:${PORT:-8000} -t public"
+cmd = "php-fpm -D && nginx -c /app/nginx.conf"
+
 
