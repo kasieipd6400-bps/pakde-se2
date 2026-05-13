@@ -1,8 +1,7 @@
 providers = ["php"]
 
 [variables]
-    # This is the only variable Nixpacks needs to correctly 
-    # configure Nginx for a Laravel project.
+    # This is the only instruction Nixpacks needs to set up Nginx correctly.
     NIXPACKS_PHP_ROOT_DIR = "/app/public"
 
 [phases.install]
@@ -10,6 +9,3 @@ providers = ["php"]
 
 [phases.build]
     cmds = ["npm run build"]
-
-# DO NOT add a [start] section.
-# DO NOT add a [phases.setup] section.
